@@ -2,4 +2,4 @@ https://www.youtube.com/watch?v=WNrHf49HVuY&list=PLEsfXFp6DpzQFqfCur9CJ4QnKQTVXU
 
 ac: trydjango19
 django shell - python manage.py shell
-
+for dynamic urls-joincfe.com/guides
