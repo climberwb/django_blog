@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
@@ -11,7 +12,12 @@ def post_create(request):
         instance = form.save(commit=False)
         instance.save()
         # message success
+        ## TODO GET MESSAGES TO NOT DISPLAY SUCCESS AND FAILURE
+        messages.success(request, "Successfully Created")
         return HttpResponseRedirect(instance.get_absolute_url())
+    else:
+        messages.error(request, "Not Successfully Created")
+        
         
     context = {
         "form":form,
@@ -49,18 +55,25 @@ def post_update(request,id=None):
     print(instance)
     form = PostForm(request.POST or None, instance=instance)
     # form = IntentionForm(instance=intention)
-    if form.is_valid():
+    if form.is_valid() and request.method == 'POST':
         instance = form.save(commit=False)
         instance.save()
         # message success
+        ## TODO GET MESSAGES TO NOT DISPLAY SUCCESS AND FAILURE
+        messages.success(request, "Successfully Updated")
+        print(instance.get_absolute_url())
         return HttpResponseRedirect(instance.get_absolute_url())
-    context = {
-        "title":instance.title,
-        "content":instance.content,
-        "form":form
-    }
-
-    return render(request,"post_form.html",context)
+    else:
+        print("hit the else")
+        messages.error(request,"Failed To Update")
+       
+        context = {
+            "title":instance.title,
+            "content":instance.content,
+            "form":form
+        }
+    
+        return render(request,"post_form.html",context)
 
 def post_delete(request):
     return HttpResponse("<h1>delete</h1>")
