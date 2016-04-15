@@ -11,9 +11,9 @@ from .views import (
 )
 
 urlpatterns = [
-    url(r'post_list/', post_list),
+    url(r'^$', post_list,name='list'),
     url(r'create/', "posts.views.post_create"),
     url(r'(?P<id>\d+)/$', post_detail, name='detail'),
     url(r'(?P<id>\d+)/edit/$', post_update, name='update'),
-    url(r'delete/', "posts.views.post_delete"),
+    url(r'(?P<id>\d+)/delete/$', post_delete),
 ]
