@@ -5,23 +5,27 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .forms import PostForm
 from .models import Post
 
+# pagination
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.shortcuts import render
+
 # Create your views here.
 
 def post_create(request):
-    form = PostForm(request.POST or None)
-    if form.is_valid() and request.method == 'POST':
+    form = PostForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
         instance = form.save(commit=False)
         instance.save()
-        # message success
-        ## TODO GET MESSAGES TO NOT DISPLAY SUCCESS AND FAILURE
-        messages.add_message(request,messages.SUCCESS, "Logged in Successfully")
+        messages.success(request,"made successful post")
         return HttpResponseRedirect(instance.get_absolute_url())
-    elif(request.method == 'POST'):
+    elif form.errors:
         messages.error(request, "Not Successfully Created")
+    else:
+        pass
         
         
     context = {
-        "form":form,
+        "form":form
     }
     return render(request,"post_form.html",context)
 
@@ -33,9 +37,25 @@ def post_detail(request,id=None):
         "post":instance
     }
     return render(request,"post_detail.html",detail)
+
+
     
+
+
 def post_list(request):
-    queryset = Post.objects.all()
+    queryset_list = Post.objects.all().order_by("-timestamp")
+    
+    paginator = Paginator(queryset_list, 15) # Show 15 contacts per page
+    page_request_var ='page'
+    page = request.GET.get(page_request_var)
+    try:
+        queryset = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        queryset = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.# If page is out of range (e.g. 9999), deliver last page of results.
+        queryset = paginator.page(paginator.num_pages)
     context = {
         "object_list":queryset,
         "title":"List"
@@ -51,26 +71,24 @@ def post_list(request):
     return render(request,"post_list.html",context)
     
 def post_update(request,id=None):
-    instance = get_object_or_404(Post,id=id)
+    post_instance = get_object_or_404(Post,id=id)
     
-    print(instance)
-    form = PostForm(request.POST or None, instance=instance)
+    form = PostForm( instance=post_instance)
+    
     # form = IntentionForm(instance=intention)
-    if form.is_valid() and request.method == 'POST':
+    if form.is_valid() and  request.method =="POST":
         instance = form.save(commit=False)
         instance.save()
-        # message success
-        ## TODO GET MESSAGES TO NOT DISPLAY SUCCESS AND FAILURE
-        messages.success(request, "Successfully Updated")
-        print(instance.get_absolute_url())
+        messages.success(request,"made successful post")
         return HttpResponseRedirect(instance.get_absolute_url())
-    elif(request.method == 'POST'):
-        print("hit the else")
-        messages.error(request,"Failed To Update")
+    elif form.errors and request.method =="POST":
+        messages.error(request, "Not Successfully Created")
+    else:
+        pass
        
     context = {
-        "title":instance.title,
-        "content":instance.content,
+        "title":post_instance.title,
+        "content":post_instance.content,
         "form":form
     }
     
