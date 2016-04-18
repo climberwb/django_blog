@@ -1,11 +1,14 @@
 from urllib import quote_plus
 
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
+from django.conf import settings
 from .forms import PostForm
-from .models import Post
+from .models import Post #,Admin
+# from settings import AUTH_USER_MODEL
+
 
 
 
@@ -16,9 +19,13 @@ from django.shortcuts import render
 # Create your views here.
 
 def post_create(request):
+    if not request.user.is_staff or not request.user.is_superuser:
+        raise Http404
+        
     form = PostForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         instance = form.save(commit=False)
+        instance.user = request.user
         instance.save()
         messages.success(request,"made successful post")
         return HttpResponseRedirect(instance.get_absolute_url())
@@ -35,11 +42,13 @@ def post_create(request):
 
 def post_detail(request,slug=None):
     instance = get_object_or_404(Post,slug=slug)
+    user = instance.user
     share_string = quote_plus(instance.content)
     detail = {
         "title":"Detail",
         "post":instance,
-        "share_string":share_string,
+        "user":user,
+        "share_string": share_string,
     }
     return render(request,"post_detail.html",detail)
 
@@ -76,9 +85,11 @@ def post_list(request):
     return render(request,"post_list.html",context)
     
 def post_update(request,slug=None):
-    print("slug"+" "+slug)
+    if not request.user.is_staff or not request.user.is_superuser:
+        raise Http404
+        
     post_instance = get_object_or_404(Post,slug=slug)
-    print(request)
+
     form = PostForm( request.POST or None, request.FILES or None, instance=post_instance)
     
     # form = IntentionForm(instance=intention)
@@ -103,6 +114,10 @@ def post_update(request,slug=None):
     return render(request,"post_form.html",context)
 
 def post_delete(request,slug=None):
+    
+    if not request.user.is_staff or not request.user.is_superuser:
+        raise Http404
+        
     instance = get_object_or_404(Post,slug=slug)
     
     messages.success(request, "Successfully Updated")
