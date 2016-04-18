@@ -29,9 +29,10 @@ def post_create(request):
     }
     return render(request,"post_form.html",context)
 
-def post_detail(request,id=None):
+def post_detail(request,slug=None):
     #instance = Post.objects.get(id=10)
-    instance = get_object_or_404(Post,id=id)
+    print("detail slug"+" "+slug)
+    instance = get_object_or_404(Post,slug=slug)
     detail = {
         "title":"Detail",
         "post":instance
@@ -70,17 +71,20 @@ def post_list(request):
     #     }
     return render(request,"post_list.html",context)
     
-def post_update(request,id=None):
-    post_instance = get_object_or_404(Post,id=id)
-    
-    form = PostForm( instance=post_instance)
+def post_update(request,slug=None):
+    print("slug"+" "+slug)
+    post_instance = get_object_or_404(Post,slug=slug)
+    print(request)
+    form = PostForm( request.POST or None, request.FILES or None, instance=post_instance)
     
     # form = IntentionForm(instance=intention)
+    print( form)
     if form.is_valid() and  request.method =="POST":
-        instance = form.save(commit=False)
-        instance.save()
+        print("inside if")
+        post_instance = form.save(commit=False)
+        post_instance.save()
         messages.success(request,"made successful post")
-        return HttpResponseRedirect(instance.get_absolute_url())
+        return HttpResponseRedirect(post_instance.get_absolute_url())
     elif form.errors and request.method =="POST":
         messages.error(request, "Not Successfully Created")
     else:
@@ -94,8 +98,8 @@ def post_update(request,id=None):
     
     return render(request,"post_form.html",context)
 
-def post_delete(request,id=None):
-    instance = get_object_or_404(Post,id=id)
+def post_delete(request,slug=None):
+    instance = get_object_or_404(Post,slug=slug)
     
     messages.success(request, "Successfully Updated")
     instance.delete()
