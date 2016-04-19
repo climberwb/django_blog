@@ -2,9 +2,8 @@
 {% extends "base.html"%}
 {% block content%}
 <div class='col-sm-8 col-sm-offset-2'>
-<h1>{{ title}} template is working</h1>
+<h1>{{ title}} </h1>
 
-       
         {% for obj in object_list %}
          <div class="row">  
             <div class='col-sm-12'>
@@ -13,7 +12,8 @@
                         {% if obj.image %}
                             <img src='{{ obj.image.url }}' class='img-responsive'/>
                         {% endif %}
-                       <h3><a href="{{obj.get_absolute_url}}"> {{obj.title}} </a><small>{{obj.publish|timesince}} ago</small></h3>
+                        
+                       <h3>{% if obj.draft%}<span style="color:red">Draft: </span>{% endif%}<a href="{{obj.get_absolute_url}}"> {{obj.title}} </a><small>{{obj.publish|timesince}} ago</small></h3>
                        {% if obj.user.get_full_name %}
                            <p> author: {{obj.user.get_full_name}} </p>
                        {% elif obj.user.username%}

@@ -7,6 +7,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.conf import settings
 from .forms import PostForm
 from .models import Post #,Admin
+
+from django.utils import timezone
 # from settings import AUTH_USER_MODEL
 
 
@@ -42,6 +44,8 @@ def post_create(request):
 
 def post_detail(request,slug=None):
     instance = get_object_or_404(Post,slug=slug)
+    if(instance.draft or instance.publish > timezone.now().date()) and(not request.user.is_staff or not request.user.is_superuser):
+        raise Http404
     user = instance.user
     share_string = quote_plus(instance.content)
     detail = {
@@ -57,8 +61,11 @@ def post_detail(request,slug=None):
 
 
 def post_list(request):
-    queryset_list = Post.objects.all().order_by("-timestamp")
-    
+    if request.user.is_staff or request.user.is_superuser:
+        queryset_list = Post.objects.all().order_by("-timestamp")
+    else:
+        queryset_list = Post.objects.active().order_by("-timestamp")
+        
     paginator = Paginator(queryset_list, 15) # Show 15 contacts per page
     page_request_var ='page'
     page = request.GET.get(page_request_var)
