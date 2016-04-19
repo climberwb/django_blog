@@ -10,7 +10,7 @@ from .models import Post #,Admin
 
 from django.utils import timezone
 # from settings import AUTH_USER_MODEL
-
+from django.db.models import Q
 
 
 
@@ -65,8 +65,17 @@ def post_list(request):
         queryset_list = Post.objects.all().order_by("-timestamp")
     else:
         queryset_list = Post.objects.active().order_by("-timestamp")
+    
+    query = request.GET.get("q")   
+    if query:
+        queryset_list = queryset_list.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query)|
+            Q(user__first_name__icontains=query) |
+            Q(user__last_name__icontains=query) 
+            ).distinct()
         
-    paginator = Paginator(queryset_list, 15) # Show 15 contacts per page
+    paginator = Paginator(queryset_list, 3) # Show 2 contacts per page
     page_request_var ='page'
     page = request.GET.get(page_request_var)
     try:
@@ -79,7 +88,8 @@ def post_list(request):
         queryset = paginator.page(paginator.num_pages)
     context = {
         "object_list":queryset,
-        "title":"List"
+        "title":"List",
+        "page_request_var":page_request_var
     }
     # if request.user.is_authenticated():
     #     context = {
