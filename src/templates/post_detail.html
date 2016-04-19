@@ -9,7 +9,7 @@
         {% if post.image %}
             <img src='{{ post.image.url }}' class='img-responsive'/>
         {% endif %}
-        <h1>{{ post.title}} <small>posted by:  {{ post.timestamp }}</small> </h1>
+        <h1>{{ post.title}} <small>{% if post.draft %} <span style="color:red">Draft</span>{% endif %}  {{ post.publish }}</small> </h1>
         
         {% if user.get_full_name %}
             <p>author: <small>{{ user.get_full_name }}</small></p>

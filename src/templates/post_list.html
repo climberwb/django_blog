@@ -13,7 +13,7 @@
                         {% if obj.image %}
                             <img src='{{ obj.image.url }}' class='img-responsive'/>
                         {% endif %}
-                       <h3><a href="{{obj.get_absolute_url}}"> {{obj.title}} </a><small>{{obj.timestamp|timesince}} ago</small></h3>
+                       <h3><a href="{{obj.get_absolute_url}}"> {{obj.title}} </a><small>{{obj.publish|timesince}} ago</small></h3>
                        {% if obj.user.get_full_name %}
                            <p> author: {{obj.user.get_full_name}} </p>
                        {% elif obj.user.username%}
