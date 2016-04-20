@@ -33,9 +33,22 @@
         <div>
             {{post.content | safe}}
         </div>
-            {{post.comment_set.all}}
+ 
+            <p class='lead'>Comments</p>
+                {% for comment in comments %}
+                    <div class=''>
+                        <blockquote>
+                          <p>{{comment.content}}</p>
+                          <footer>via {{comment.user}} on {{comment.timestamp | timesince }} ago</footer>
+                      </blockquote>
+                      <br />
+                      
+                    </div>
+                    <hr />
+                 {% endfor  %}
+            
         <div>
-        <div class="fb-comments" data-href="{{request.build_absolute_uri}}" data-numposts="5"></div>
+        
         
     </div>
     

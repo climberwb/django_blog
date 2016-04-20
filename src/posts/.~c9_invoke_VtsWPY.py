@@ -11,6 +11,7 @@ from .models import Post #,Admin
 # for generic key Comments recieved
 # code for imports from https://docs.djangoproject.com/en/1.9/ref/contrib/contenttypes/
 from comments.models import Comment
+# from django.contrib.contenttypes.models import ContentType
 
 from django.utils import timezone
 # from settings import AUTH_USER_MODEL
@@ -51,8 +52,7 @@ def post_detail(request,slug=None):
     instance = get_object_or_404(Post,slug=slug)
     
    
-    #comments = Comment.objects.filter_by_instance(instance)
-    comments = instance.comments
+    comments = comment.objects.filter_by_instance(instance.id)
     
     if(instance.draft or instance.publish > timezone.now().date()) and(not request.user.is_staff or not request.user.is_superuser):
         raise Http404

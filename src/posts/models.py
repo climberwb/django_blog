@@ -7,6 +7,8 @@ from django.db.models.signals import pre_save
 from django.utils.text import slugify
 from django.utils import timezone
 
+from comments.models import Comment
+
 ## made replacing default active() to return 
 ## Post obejects with filtering 
 class PostManager(models.Manager):
@@ -47,6 +49,16 @@ class Post(models.Model):
         print(self.slug)
         # added post to signify namespace
         return reverse("posts:detail",kwargs={"slug":self.slug})
+    
+    # @property makes comments a property of posts. 
+    # basically when calling this from post views there
+    # is no need to use () on post.comments() instead its post.comments
+    @property
+    def comments(self):
+        instance = self
+        qs = Comment.objects.filter_by_instance(instance)
+        print(qs)
+        return qs
         
 def create_slug(instance, new_slug=None):
     slug=slugify(instance.title)
@@ -64,6 +76,8 @@ def pre_save_post_receiver(sender, instance,*args,**kwargs):
     if not instance.slug:
         instance.slug = create_slug(instance)
 
+    
+    
 
 pre_save.connect(pre_save_post_receiver, sender=Post)
 # from django.db import models
