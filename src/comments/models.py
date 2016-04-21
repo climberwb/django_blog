@@ -6,7 +6,7 @@ from django.db import models
 ## import generic foreign keys
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-
+from django.core.urlresolvers import reverse
 # Create your models here.
 
 
@@ -46,7 +46,8 @@ class Comment(models.Model):
         
     def children(self):#replies
         return Comment.objects.filter(parent=self)
-    
+    def get_absolute_url(self):
+        return reverse("comments:thread", kwargs={"id":self.id})
     @property
     def is_parent(self):
         if self.parent is not None:

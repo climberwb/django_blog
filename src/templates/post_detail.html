@@ -42,7 +42,7 @@
                     <div class=''>
                         <blockquote>
                           <p>{{comment.content}}</p>
-                          <footer>via {{comment.user}} on {{comment.timestamp | timesince }} ago</footer>
+                          <footer>via {{comment.user}} on {{comment.timestamp | timesince }} ago <a href ="{{comment.get_absolute_url}}">see all replies</a></footer>
                           <p><strong>replies:</strong></p>
                           {% for child_comment in comment.children %}
                               <blockquote>
