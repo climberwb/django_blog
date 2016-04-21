@@ -17,6 +17,7 @@ from comments.forms import CommentForm
 from django.utils import timezone
 # from settings import AUTH_USER_MODEL
 from django.db.models import Q
+from .utils import get_read_time
 
 
 
@@ -62,7 +63,6 @@ def post_detail(request,slug=None):
     user = instance.user
     
     share_string = quote_plus(instance.content)
-    
     initial_data = {
         "content_type": instance.get_content_type,
         "object_id": instance.id

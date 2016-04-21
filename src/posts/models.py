@@ -49,7 +49,6 @@ class Post(models.Model):
         return self.title
     
     def get_absolute_url(self):
-        print(self.slug)
         # added post to signify namespace
         return reverse("posts:detail",kwargs={"slug":self.slug})
     
