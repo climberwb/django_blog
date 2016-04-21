@@ -7,6 +7,9 @@ from django.db.models.signals import pre_save
 from django.utils.text import slugify
 from django.utils import timezone
 
+from django.contrib.contenttypes.models import ContentType
+
+
 from comments.models import Comment
 
 ## made replacing default active() to return 
@@ -57,8 +60,13 @@ class Post(models.Model):
     def comments(self):
         instance = self
         qs = Comment.objects.filter_by_instance(instance)
-        print(qs)
         return qs
+        
+    @property
+    def get_content_type(self):
+        instance = self
+        content_type =ContentType.objects.get_for_model(instance.__class__)
+        return content_type
         
 def create_slug(instance, new_slug=None):
     slug=slugify(instance.title)

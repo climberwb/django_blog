@@ -2,7 +2,6 @@
 {% load urlify %}
 {% block head_title%} {{post.title}} {{block.super}} {% endblock head_title%}
 
-
 {% block content %}
     <div class='col-sm-6 col-sm-offset-3'>
         
@@ -35,13 +34,28 @@
         </div>
  
             <p class='lead'>Comments</p>
+            <form method="POST" action="">{% csrf_token %}
+                {{comment_form }}
+                <input type='submit' class="btn btn-default" value='Create Message' />
+            </from>
                 {% for comment in comments %}
                     <div class=''>
                         <blockquote>
                           <p>{{comment.content}}</p>
                           <footer>via {{comment.user}} on {{comment.timestamp | timesince }} ago</footer>
+                          <p><strong>replies:</strong></p>
+                          {% for child_comment in comment.children %}
+                              <blockquote>
+                                  <p>{{child_comment.content}}</p>
+                          <footer>via {{child_comment.user}} on {{child_comment.timestamp | timesince }} ago</footer>
+                              </blockquote>
+                         {% endfor %}
+                          <form method="POST" action=".">{% csrf_token %}
+                                {{comment_form }}
+                                <input type='hidden' name='parent_id' value='{{comment.id}}'>
+                                <input type='submit' class="btn btn-default" value='Reply' />
+                          </form>
                       </blockquote>
-                      <br />
                       
                     </div>
                     <hr />
